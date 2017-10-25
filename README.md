@@ -5,7 +5,7 @@ Finding the minimum of an arbitrary function using optimizers from Keras
 
 This python notebook shows how to use optimizers from Keras to find the minimum of an arbitrary function.
 
-Although, it can be done using pure TensorFlow or Theano it is better to have high level code which enables you to switch between backends whenever you want. In addition, Theano unlike TensorFlow doesn't have its own builtin optimizers so you would have to implement it yourself.
+Although it can be done using pure TensorFlow or Theano it is better to have high level code which enables you to switch between backends whenever you want. In addition, Theano unlike TensorFlow doesn't have its own builtin optimizers so you would have to implement it yourself.
 
 Here is a piece of code demonstrating using of SGD optimizer to take several steps towards the minimum of the [Rosenbrock function](https://en.wikipedia.org/wiki/Rosenbrock_function) from start point:
 ```python
