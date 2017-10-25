@@ -7,7 +7,67 @@ This python notebook shows how to use optimizers from Keras to find the minimum 
 
 Although it can be done using pure TensorFlow or Theano it is better to have high level code which enables you to switch between backends whenever you want. In addition, Theano unlike TensorFlow doesn't have its own builtin optimizers so you would have to implement it yourself.
 
-Here is a piece of code demonstrating using of SGD optimizer to take several steps towards the minimum of the [Rosenbrock function](https://en.wikipedia.org/wiki/Rosenbrock_function) from start point:
+### Using keras.optimizers
+
+To use optimizers it is necessary first to import them and keras backend:
+```python
+from keras import backend as K
+from keras import optimizers
+```
+
+The second step is the definition of a function that will be optimized. For example consider the [Rosenbrock function](https://en.wikipedia.org/wiki/Rosenbrock_function).
+
+Define a native python function:
+```python
+a = 1
+b = 10
+
+def f(x, y):
+    return (a - x) ** 2 + b * (y - x ** 2) ** 2
+```
+
+Define parameters of that function with initial values from which the optimizer will start its path to function minimum:
+```python
+X = K.variable(-2.5, name='x')
+Y = K.variable(-2.0, name='y')
+```
+
+Make a keras function. As keras.variable objects support standart math operators in our case we can just pass them to the ```f``` to obtain the keras function:
+```python
+F = f(X, Y)
+```
+
+If your function contains some non-standard operations you may call necessary methods from ```backend``` package. See the [documentation](https://keras.io/backend/#backend-functions) for more info.
+
+Unlike a native python function ```F``` isn't intended to be called. This is a special object &mdash; tensor graph.
+
+The third step is creation of an optimizer object and functions which will be used to update parameters.
+
+Initialize chosen optimizer object with parameters:
+```python
+opt = optimizers.SGD(nesterov=True, momentum=0.9, lr=0.001)
+```
+
+Make an array of functions which updates the parameters ```X``` and ```Y``` of ```F``` to minimize ```F```'s value using given optimizer:
+```python
+updates = opt.get_updates([X, Y], [], F)
+```
+
+Make a function that returns the ```F```'s value and updates the parameters:
+```python
+iterate = K.function([], [F], updates)
+```
+You may add any parameters you want to watch over during the optimization in the second parameter of ```K.function```.
+
+The last step is optimization. Call ```iterate``` several times or until F_value achieves the desired minimum:
+```python
+for i in range(20):
+    F_value = iterate([])[0]
+    if F_value < 0.01:
+        break
+```
+
+Here is a piece of code demonstrating using of SGD optimizer to take several steps towards the minimum of the [Rosenbrock function](https://en.wikipedia.org/wiki/Rosenbrock_function) from start point (see realization of find_min and others functions in the notebook above):
 ```python
 # try an optimizer
 opt = optimizers.SGD(nesterov=True, momentum=0.9, lr=0.001)
