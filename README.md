@@ -99,4 +99,41 @@ f: 5.783146,	x: 0.963994,	y: 1.689669
 f: 2.430155,	x: 1.091450,	y: 1.683381
 ```
 
+### Optimizing a function with a vector of parameters
+There is used a more involved variant of the Rosenbrock function with many parameters. See the formula in the notebook.
 
+
+```python
+a = 1
+b = 100
+
+pn = 1024  # Number of elements in the vector
+
+# initialize a vector with random numbers
+X = K.variable(np.random.uniform(-5, 5, size=pn), name='x')
+
+# define a function
+F = K.sum(b * (X[1::2] - X[::2] ** 2) ** 2 + (a - X[::2]) ** 2)
+
+# initialize an optimizer
+opt = optimizers.Adagrad(lr=2.5)
+
+# make a function that updates parameters and return the function value
+updates = opt.get_updates([X], [], F)
+iterate = K.function([], [F], updates)
+
+# run gradien descent
+for i in range(50):
+    F_value = iterate([])[0]
+    print('step %2d:\tvalue: %f' % (i, F_value))
+```
+
+```
+step  0:	value: 7068827.500000
+step  1:	value: 1497900.750000
+step  2:	value: 325722.625000
+...
+step 47:	value: 1343.550171
+step 48:	value: 1342.815918
+step 49:	value: 1342.091064
+```
